@@ -69,6 +69,9 @@ const CollegesPage = () => {
   // Add / Update College
   const handleSubmit = async (e) => {
     e.preventDefault();
+     if (!editingId && !form.admin.password.trim())
+    return alert("Admin password is required");
+
     setLoading(true);
     try {
       const url = editingId ? `${API_BASE}/${editingId}` : API_BASE;

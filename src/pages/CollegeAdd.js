@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Layout from "../layouts/Collegelayout";
-
+const BULK_API = "https://mynexus.co.in/api/api/students/bulk";
 const API_BASE = "https://mynexus.co.in/api/api/students";
 const COURSES_API = "https://mynexus.co.in/api/api/courses?page=1&limit=50"; // fetch all courses
 
@@ -28,7 +28,7 @@ const StudentsPage = () => {
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState(initialForm);
   const [editingId, setEditingId] = useState(null);
-
+  const [bulkFile, setBulkFile] = useState(null);
   const token = localStorage.getItem("token");
 
   // Fetch students
@@ -156,14 +156,54 @@ const StudentsPage = () => {
       console.error(err);
     }
   };
+ const handleBulkUpload = async () => {
+    if (!bulkFile) {
+      alert("Please select a CSV file first.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", bulkFile);
 
+      await fetch(BULK_API, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+
+      setBulkFile(null);
+      fetchStudents();
+      alert("Students uploaded successfully!");
+    } catch (err) {
+      console.error(err);
+      alert("Bulk upload failed!");
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <Layout>
       <div className="p-6">
         <h1 className="text-2xl font-bold mb-6" style={{ color: "#246fb2" }}>
           🧑‍🎓 Students Management
         </h1>
-
+  <div className="bg-white p-4 rounded-lg shadow-md mb-6">
+          <h2 className="text-lg font-semibold mb-2">📂 Bulk Upload Students (CSV)</h2>
+          <input
+            type="file"
+            accept=".csv"
+            onChange={(e) => setBulkFile(e.target.files[0])}
+            className="mb-3"
+          />
+          <button
+            onClick={handleBulkUpload}
+            disabled={loading}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+          >
+            Upload CSV
+          </button>
+        </div>
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white p-4 rounded-lg shadow-md mb-6">
           <input name="name" value={form.name} onChange={handleChange} placeholder="Student Name" required className="border px-3 py-2 rounded-lg w-full" />
           <input name="rollNo" value={form.rollNo} onChange={handleChange} placeholder="Roll No" required className="border px-3 py-2 rounded-lg w-full" />

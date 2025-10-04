@@ -22,7 +22,7 @@ const TeachersPage = () => {
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState(initialForm);
   const [editingId, setEditingId] = useState(null);
-
+  const [bulkFile, setBulkFile] = useState(null);
   const token = localStorage.getItem("token");
 
   // Fetch teachers
@@ -76,6 +76,7 @@ const TeachersPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    
     try {
       const url = editingId ? `${API_BASE}/${editingId}` : API_BASE;
       const method = editingId ? "PUT" : "POST";
@@ -178,6 +179,34 @@ const TeachersPage = () => {
       console.error(err);
     }
   };
+  const handleBulkUpload = async () => {
+    if (!bulkFile) return alert("Select a file first!");
+    setLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append("csvFile", bulkFile);
+
+      const res = await fetch(`${API_BASE}/bulk`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (data.status === 1) {
+        alert("Teachers uploaded successfully!");
+        setBulkFile(null);
+        fetchTeachers();
+      } else {
+        alert(data.message || "Failed to upload teachers");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error uploading file");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <Layout>
@@ -185,6 +214,24 @@ const TeachersPage = () => {
         <h1 className="text-2xl font-bold mb-6" style={{ color: "#246fb2" }}>
           👩‍🏫 Teachers Management
         </h1>
+        <div className="mt-4 flex gap-2 items-center">
+          <input
+            type="file"
+            onChange={(e) => setBulkFile(e.target.files[0])}
+            className="border px-3 py-2 rounded-lg"
+          />
+          <button
+            onClick={handleBulkUpload}
+            disabled={!bulkFile || loading}
+            className="px-4 py-2 bg-green-500 text-white rounded-lg"
+          >
+            Upload CSV
+          </button>
+
+          <button onClick={() => handleExport("sample")} className="px-4 py-2 bg-blue-500 text-white rounded-lg">
+            Download Sample CSV
+          </button>
+        </div>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white p-4 rounded-lg shadow-md mb-6">
