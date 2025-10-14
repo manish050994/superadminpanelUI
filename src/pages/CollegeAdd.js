@@ -10,7 +10,7 @@ const initialForm = {
   name: "",
   rollNo: "",
   courseId: "",
-  year: 1,
+  year: 2024,
   section: "",
   email: "",
   password: "",
@@ -73,28 +73,62 @@ const StudentsPage = () => {
     }
   };
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setLoading(true);
+  //   try {
+  //     const url = editingId ? `${API_BASE}/${editingId}` : API_BASE;
+  //     const method = editingId ? "PUT" : "POST";
+
+  //     await fetch(url, {
+  //       method,
+  //       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+  //       body: JSON.stringify(form),
+  //     });
+
+  //     setForm(initialForm);
+  //     setEditingId(null);
+  //     fetchStudents();
+  //   } catch (err) {
+  //     console.error(err);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      const url = editingId ? `${API_BASE}/${editingId}` : API_BASE;
-      const method = editingId ? "PUT" : "POST";
+  e.preventDefault();
+  setLoading(true);
+  try {
+    const url = editingId ? `${API_BASE}/${editingId}` : API_BASE;
+    const method = editingId ? "PUT" : "POST";
 
-      await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify(form),
-      });
+    const res = await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify(form),
+    });
 
+    const data = await res.json(); // parse response
+
+    if (!res.ok || data.status === 0) {
+      // ❌ API returned an error
+      alert(data.message || data.error || "Failed to create student.");
+    } else {
+      // ✅ Success
+      alert("Student created successfully!");
       setForm(initialForm);
       setEditingId(null);
       fetchStudents();
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
     }
-  };
+  } catch (err) {
+    console.error(err);
+    alert("Something went wrong while submitting.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure?")) return;
@@ -210,7 +244,7 @@ const StudentsPage = () => {
 
           {/* Course Dropdown */}
           <select name="courseId" value={form.courseId} onChange={handleChange} required className="border px-3 py-2 rounded-lg w-full">
-            <option value={form.courseId?form.courseId:""}>{form.courseId?form.courseId:"Select Course"}</option>
+            <option value={form.name?form.name:""}>{form.name?form.name:"Select Course"}</option>
             {courses.map((course) => (
               <option key={course.id} value={course.id}>
                 {course.name}

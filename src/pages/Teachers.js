@@ -10,7 +10,7 @@ const initialForm = {
   employeeId: "",
   email: "",
   password: "",
-  groups: [],
+  section: [],
   courseId: "",
   subjectId: "",
 };
@@ -76,7 +76,7 @@ const TeachersPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    
+
     try {
       const url = editingId ? `${API_BASE}/${editingId}` : API_BASE;
       const method = editingId ? "PUT" : "POST";
@@ -116,7 +116,7 @@ const TeachersPage = () => {
       employeeId: teacher.employeeId,
       email: teacher.email,
       password: "",
-      groups: teacher.groups || [],
+      section: teacher.section || [],
       courseId: teacher.courseId || "",
       subjectId: teacher.subjectId || "",
     });
@@ -152,12 +152,12 @@ const TeachersPage = () => {
   };
 
   const handleAssignGroup = async (teacherId) => {
-    if (!form.groups.length) return alert("Enter group to assign!");
+    if (!form.section.length) return alert("Enter group to assign!");
     try {
       await fetch(`${API_BASE}/${teacherId}/assign-group`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ group: form.groups[0] }), // assign first group
+        body: JSON.stringify({ group: form.section[0] }), // assign first group
       });
       fetchTeachers();
     } catch (err) {
@@ -239,7 +239,7 @@ const TeachersPage = () => {
           <input name="employeeId" value={form.employeeId} onChange={handleChange} placeholder="Employee ID" required className="border px-3 py-2 rounded-lg w-full" />
           <input name="email" type="email" value={form.email} onChange={handleChange} placeholder="Email" required className="border px-3 py-2 rounded-lg w-full" />
           <input name="password" type="password" value={form.password} onChange={handleChange} placeholder="Password" className="border px-3 py-2 rounded-lg w-full" />
-          <input name="groups" value={form.groups} onChange={(e) => setForm({ ...form, groups: [e.target.value] })} placeholder="Group" className="border px-3 py-2 rounded-lg w-full" />
+          <input name="section" value={form.section} onChange={(e) => setForm({ ...form, section: [e.target.value] })} placeholder="Section" className="border px-3 py-2 rounded-lg w-full" />
 
           {/* Course Dropdown */}
           <select name="courseId" value={form.courseId} onChange={handleChange} className="border px-3 py-2 rounded-lg w-full">
@@ -272,7 +272,7 @@ const TeachersPage = () => {
                 <th className="p-3">Name</th>
                 <th className="p-3">Employee ID</th>
                 <th className="p-3">Email</th>
-                <th className="p-3">Groups</th>
+                <th className="p-3">Section</th>
                 <th className="p-3">Course</th>
                 <th className="p-3">Subject</th>
                 <th className="p-3">Actions</th>
@@ -288,9 +288,13 @@ const TeachersPage = () => {
                       <td className="p-3">{t.name}</td>
                       <td className="p-3">{t.employeeId}</td>
                       <td className="p-3">{t.email}</td>
-                      <td className="p-3">{t.groups?.join(", ")}</td>
+                      <td className="p-3">{t.section?.join(", ")}</td>
                       <td className="p-3">{course?.name || t.courseId}</td>
-                      <td className="p-3">{subject?.name || t.subjectId}</td>
+                      <td className="p-3">
+                        {t.Subjects && t.Subjects.length > 0
+                          ? t.Subjects.map((sub) => sub.name).join(", ")
+                          : "No subjects"}
+                      </td>
                       <td className="p-3 flex gap-2 flex-wrap">
                         <button onClick={() => handleEdit(t)} className="px-3 py-1 bg-yellow-400 text-white rounded-md text-sm">Edit</button>
                         <button onClick={() => handleAssignCourse(t.id)} className="px-3 py-1 bg-blue-500 text-white rounded-md text-sm">Assign Course</button>

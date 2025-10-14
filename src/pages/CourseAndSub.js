@@ -17,7 +17,7 @@ const CoursesPage = () => {
   const [loading, setLoading] = useState(false);
   const [assignSubjects, setAssignSubjects] = useState([]);
   const [selectedCourseId, setSelectedCourseId] = useState(null);
-
+const [courseSubjects, setCourseSubjects] = useState([]);
   const token = localStorage.getItem("token");
 
   // Fetch Courses
@@ -29,6 +29,22 @@ const CoursesPage = () => {
       });
       const data = await res.json();
       setCourses(data.data?.courses || []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  // Fetch subjects by course
+  const fetchSubjectsByCourse = async (courseId) => {
+    if (!courseId) return;
+    setLoading(true); 
+    try {
+      const res = await fetch(`https://mynexus.co.in/api/api/subjects/by-course/${courseId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      setCourseSubjects(data.data?.subjects || []);
     } catch (err) {
       console.error(err);
     } finally {
@@ -171,116 +187,151 @@ const CoursesPage = () => {
 
   return (
     <Layout>
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6" style={{ color: "#246fb2" }}>
-        📚 Courses & Subjects Management
-      </h1>
+      <div className="p-6">
+        <h1 className="text-2xl font-bold mb-6" style={{ color: "#246fb2" }}>
+          📚 Courses & Subjects Management
+        </h1>
 
-      {/* Forms */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <form onSubmit={handleCourseSubmit} className="bg-white p-4 rounded shadow-md">
-          <h2 className="font-semibold mb-2">Course</h2>
-          <input name="code" value={courseForm.code} onChange={handleCourseChange} placeholder="Course Code" className="border px-3 py-2 w-full rounded mb-2" required />
-          <input name="name" value={courseForm.name} onChange={handleCourseChange} placeholder="Course Name" className="border px-3 py-2 w-full rounded mb-2" required />
-          <button type="submit" disabled={loading} className="w-full py-2 rounded text-white font-semibold" style={{ backgroundColor: "#246fb2" }}>
-            {editingCourseId ? "Update Course" : "Add Course"}
-          </button>
-        </form>
+        {/* Forms */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <form onSubmit={handleCourseSubmit} className="bg-white p-4 rounded shadow-md">
+            <h2 className="font-semibold mb-2">Course</h2>
+            <input name="code" value={courseForm.code} onChange={handleCourseChange} placeholder="Course Code" className="border px-3 py-2 w-full rounded mb-2" required />
+            <input name="name" value={courseForm.name} onChange={handleCourseChange} placeholder="Course Name" className="border px-3 py-2 w-full rounded mb-2" required />
+            <button type="submit" disabled={loading} className="w-full py-2 rounded text-white font-semibold" style={{ backgroundColor: "#246fb2" }}>
+              {editingCourseId ? "Update Course" : "Add Course"}
+            </button>
+          </form>
 
-        <form onSubmit={handleSubjectSubmit} className="bg-white p-4 rounded shadow-md">
-          <h2 className="font-semibold mb-2">Subject</h2>
-          <input name="code" value={subjectForm.code} onChange={handleSubjectChange} placeholder="Subject Code" className="border px-3 py-2 w-full rounded mb-2" required />
-          <input name="name" value={subjectForm.name} onChange={handleSubjectChange} placeholder="Subject Name" className="border px-3 py-2 w-full rounded mb-2" required />
-          <button type="submit" disabled={loading} className="w-full py-2 rounded text-white font-semibold" style={{ backgroundColor: "#246fb2" }}>
-            {editingSubjectId ? "Update Subject" : "Add Subject"}
-          </button>
-        </form>
-      </div>
-
-      {/* Loader */}
-      {loading && <div className="text-center py-4"><div className="animate-spin h-8 w-8 border-4 border-blue-300 border-t-transparent rounded-full mx-auto"></div></div>}
-
-      {/* Courses Table */}
-      <div className="bg-white shadow-md rounded-lg overflow-x-auto mb-6">
-        <h2 className="font-semibold p-3" style={{ color: "#246fb2" }}>Courses</h2>
-        <table className="w-full border-collapse">
-          <thead style={{ backgroundColor: "#246fb2" }}>
-            <tr className="text-left text-white">
-              <th className="p-3">Code</th>
-              <th className="p-3">Name</th>
-              <th className="p-3">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {courses.map((c) => (
-              <tr key={c.id} className="border-b">
-                <td className="p-3">{c.code}</td>
-                <td className="p-3">{c.name}</td>
-                <td className="p-3 flex gap-2 flex-wrap">
-                  <button onClick={() => handleEditCourse(c)} className="px-3 py-1 bg-yellow-400 text-white rounded-md text-sm">Edit</button>
-                  <button onClick={() => handleDeleteCourse(c.id)} className="px-3 py-1 bg-red-500 text-white rounded-md text-sm">Delete</button>
-                  <button onClick={() => setSelectedCourseId(c.id)} className="px-3 py-1 bg-green-500 text-white rounded-md text-sm">Assign Subjects</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Subjects Table */}
-      <div className="bg-white shadow-md rounded-lg overflow-x-auto mb-6">
-        <h2 className="font-semibold p-3" style={{ color: "#246fb2" }}>Subjects</h2>
-        <table className="w-full border-collapse">
-          <thead style={{ backgroundColor: "#246fb2" }}>
-            <tr className="text-left text-white">
-              <th className="p-3">Code</th>
-              <th className="p-3">Name</th>
-              <th className="p-3">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {subjects.map((s) => (
-              <tr key={s.id} className="border-b">
-                <td className="p-3">{s.code}</td>
-                <td className="p-3">{s.name}</td>
-                <td className="p-3 flex gap-2 flex-wrap">
-                  <button onClick={() => handleEditSubject(s)} className="px-3 py-1 bg-yellow-400 text-white rounded-md text-sm">Edit</button>
-                  <button onClick={() => handleDeleteSubject(s.id)} className="px-3 py-1 bg-red-500 text-white rounded-md text-sm">Delete</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Assign Subjects */}
-      {selectedCourseId && (
-        <div className="bg-white shadow-md rounded-lg p-4 mb-6">
-          <h2 className="font-semibold mb-2" style={{ color: "#246fb2" }}>Assign Subjects to Course</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-            {subjects.map((s) => (
-              <label key={s.id} className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  value={s.id}
-                  checked={assignSubjects.includes(s.id)}
-                  onChange={(e) => {
-                    const id = s.id;
-                    if (assignSubjects.includes(id)) {
-                      setAssignSubjects(assignSubjects.filter((x) => x !== id));
-                    } else {
-                      setAssignSubjects([...assignSubjects, id]);
-                    }
-                  }}
-                />
-                {s.name}
-              </label>
-            ))}
-          </div>
-          <button onClick={handleAssignSubjects} className="mt-3 py-2 px-4 rounded text-white font-semibold" style={{ backgroundColor: "#246fb2" }}>Assign</button>
+          <form onSubmit={handleSubjectSubmit} className="bg-white p-4 rounded shadow-md">
+            <h2 className="font-semibold mb-2">Subject</h2>
+            <input name="code" value={subjectForm.code} onChange={handleSubjectChange} placeholder="Subject Code" className="border px-3 py-2 w-full rounded mb-2" required />
+            <input name="name" value={subjectForm.name} onChange={handleSubjectChange} placeholder="Subject Name" className="border px-3 py-2 w-full rounded mb-2" required />
+            <button type="submit" disabled={loading} className="w-full py-2 rounded text-white font-semibold" style={{ backgroundColor: "#246fb2" }}>
+              {editingSubjectId ? "Update Subject" : "Add Subject"}
+            </button>
+          </form>
         </div>
-      )}
-    </div>
+
+        {/* Loader */}
+        {loading && <div className="text-center py-4"><div className="animate-spin h-8 w-8 border-4 border-blue-300 border-t-transparent rounded-full mx-auto"></div></div>}
+
+        {/* Courses Table */}
+        <div className="bg-white shadow-md rounded-lg overflow-x-auto mb-6">
+          <h2 className="font-semibold p-3" style={{ color: "#246fb2" }}>Courses</h2>
+          <table className="w-full border-collapse">
+            <thead style={{ backgroundColor: "#246fb2" }}>
+              <tr className="text-left text-white">
+                <th className="p-3">Code</th>
+                <th className="p-3">Name</th>
+                <th className="p-3">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {courses.map((c) => (
+                <tr key={c.id} className="border-b">
+                  <td className="p-3">{c.code}</td>
+                  <td className="p-3">{c.name}</td>
+                  <td className="p-3 flex gap-2 flex-wrap">
+                    <button onClick={() => handleEditCourse(c)} className="px-3 py-1 bg-yellow-400 text-white rounded-md text-sm">Edit</button>
+                    <button onClick={() => handleDeleteCourse(c.id)} className="px-3 py-1 bg-red-500 text-white rounded-md text-sm">Delete</button>
+                    {/* <button onClick={() => setSelectedCourseId(c.id)} className="px-3 py-1 bg-green-500 text-white rounded-md text-sm">Assign Subjects</button> */}
+                    <button
+                      onClick={() => {
+                        setSelectedCourseId(c.id);
+                        fetchSubjectsByCourse(c.id); // fetch subjects only for this course
+                      }}
+                      className="px-3 py-1 bg-green-500 text-white rounded-md text-sm"
+                    >
+                      Assign Subjects
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Subjects Table */}
+        <div className="bg-white shadow-md rounded-lg overflow-x-auto mb-6">
+          <h2 className="font-semibold p-3" style={{ color: "#246fb2" }}>Subjects</h2>
+          <table className="w-full border-collapse">
+            <thead style={{ backgroundColor: "#246fb2" }}>
+              <tr className="text-left text-white">
+                <th className="p-3">Code</th>
+                <th className="p-3">Name</th>
+                <th className="p-3">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {subjects.map((s) => (
+                <tr key={s.id} className="border-b">
+                  <td className="p-3">{s.code}</td>
+                  <td className="p-3">{s.name}</td>
+                  <td className="p-3 flex gap-2 flex-wrap">
+                    <button onClick={() => handleEditSubject(s)} className="px-3 py-1 bg-yellow-400 text-white rounded-md text-sm">Edit</button>
+                    <button onClick={() => handleDeleteSubject(s.id)} className="px-3 py-1 bg-red-500 text-white rounded-md text-sm">Delete</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Assign Subjects */}
+        {selectedCourseId && (
+          <div className="bg-white shadow-md rounded-lg p-4 mb-6">
+            <h2 className="font-semibold mb-2" style={{ color: "#246fb2" }}>Assign Subjects to Course</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              {subjects.map((s) => (
+                <label key={s.id} className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    value={s.id}
+                    checked={assignSubjects.includes(s.id)}
+                    onChange={(e) => {
+                      const id = s.id;
+                      if (assignSubjects.includes(id)) {
+                        setAssignSubjects(assignSubjects.filter((x) => x !== id));
+                      } else {
+                        setAssignSubjects([...assignSubjects, id]);
+                      }
+                    }}
+                  />
+                  {s.name}
+                </label>
+              ))}
+            </div>
+            <button onClick={handleAssignSubjects} className="mt-3 py-2 px-4 rounded text-white font-semibold" style={{ backgroundColor: "#246fb2" }}>Assign</button>
+          </div>
+        )}
+        {selectedCourseId && courseSubjects.length > 0 && (
+  <div className="bg-white shadow-md rounded-lg overflow-x-auto mb-6">
+    <h2 className="font-semibold p-3" style={{ color: "#246fb2" }}>
+      Subjects for Course
+    </h2>
+    <table className="w-full border-collapse">
+      <thead style={{ backgroundColor: "#246fb2" }}>
+        <tr className="text-left text-white">
+          <th className="p-3">Code</th>
+          <th className="p-3">Name</th>
+          <th className="p-3">Teacher</th>
+        </tr>
+      </thead>
+      <tbody>
+        {courseSubjects.map((s) => (
+          <tr key={s.id} className="border-b">
+            <td className="p-3">{s.code}</td>
+            <td className="p-3">{s.name}</td>
+            <td className="p-3">{s.Teacher ? s.Teacher.name : "-"}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)}
+
+      </div>
     </Layout>
   );
 };

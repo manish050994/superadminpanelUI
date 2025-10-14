@@ -13,7 +13,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         { name: "Teachers Page", icon: <Settings size={20} />, path: "/TeachersPage" },
         { name: "Fees Page", icon: <Settings size={20} />, path: "/FeesPage" },
         { name: "Teacher Leaves Page", icon: <Settings size={20} />, path: "/TeacherLeavesPage" },
-        { name: "Parents Page", icon: <Settings size={20} />, path: "/ParentsPage" },
+  
         { name: "Time table Page", icon: <Settings size={20} />, path: "/TimetablePage" },
         { name: "Attendance Page", icon: <Settings size={20} />, path: "/AttendancePage" },
     ];

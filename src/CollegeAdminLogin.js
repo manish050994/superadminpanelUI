@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const CollegeAdminLogin = () => {
-  const [form, setForm] = useState({ email: "", password: "", collegeCode: "" });
+  const [form, setForm] = useState({ loginId: "", password: ""});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -28,7 +28,12 @@ const CollegeAdminLogin = () => {
       if (res.ok && data.data.token) {
         // Save token
         localStorage.setItem("token", data.data.token);
-        navigate("/dashboard-college-admin"); // redirect to dashboard
+        // redirect to dashboard
+           if (data.data.user.role === "collegeadmin") {
+           navigate("/dashboard-college-admin"); // redirect to dashboard
+        } else {
+          alert("You are not authorized to access this page.");
+        }
       } else {
         setError(data.message || "Login failed. Please check credentials.");
       }
@@ -41,8 +46,8 @@ const CollegeAdminLogin = () => {
   };
 
   const handleForgot = async () => {
-    if (!form.email) {
-      setError("Enter email for password reset.");
+    if (!form.loginId) {
+      setError("Enter loginId for password reset.");
       return;
     }
 
@@ -51,10 +56,10 @@ const CollegeAdminLogin = () => {
       const res = await fetch("https://mynexus.co.in/api/api/auth/forgot", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: form.email }),
+        body: JSON.stringify({ loginId: form.loginId }),
       });
       const data = await res.json();
-      alert(data.message || "If the email exists, a reset link has been sent.");
+      alert(data.message || "If the loginId exists, a reset link has been sent.");
     } catch (err) {
       console.error(err);
     } finally {
@@ -73,11 +78,11 @@ const CollegeAdminLogin = () => {
 
         <form onSubmit={handleLogin} className="space-y-4">
           <input
-            type="email"
-            name="email"
-            value={form.email}
+            type="loginId"
+            name="loginId"
+            value={form.loginId}
             onChange={handleChange}
-            placeholder="Email"
+            placeholder="loginId"
             required
             className="w-full border px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
@@ -90,15 +95,7 @@ const CollegeAdminLogin = () => {
             required
             className="w-full border px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <input
-            type="text"
-            name="collegeCode"
-            value={form.collegeCode}
-            onChange={handleChange}
-            placeholder="College Code"
-            required
-            className="w-full border px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+       
 
           <button
             type="submit"

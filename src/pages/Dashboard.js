@@ -46,7 +46,8 @@ const Dashboard = () => {
   }
 
   if (error) {
-    return <div className="text-center text-red-600 font-medium">{error}</div>;
+    alert(error);
+    // return <div className="text-center text-red-600 font-medium">{error}</div>;
   }
 
   return (

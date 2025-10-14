@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const AuthPage = () => {
-  const [email, setEmail] = useState("");
+  const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
   const [isForgot, setIsForgot] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -19,7 +19,7 @@ const AuthPage = () => {
         ? "https://mynexus.co.in/api/api/auth/forgot"
         : "https://mynexus.co.in/api/api/auth/login";
 
-      const body = isForgot ? { email } : { email, password };
+      const body = isForgot ? { loginId } : { loginId, password };
 
       const res = await fetch(url, {
         method: "POST",
@@ -31,16 +31,20 @@ const AuthPage = () => {
       if (!res.ok) throw new Error(loginData.message || "Something went wrong");
 
       if (isForgot) {
-        setMessage("📩 Reset link sent to your email.");
+        setMessage("📩 Reset link sent to your loginId.");
       } else {
         setMessage("✅ Login successful!");
         console.log("Login Response loginData:", loginData);
         // Save token if needed
         // localStorage.setItem("token", loginData?.data);
-           localStorage.setItem("token", loginData.data.token);
-      // localStorage.setItem("role", loginData.user.role);
-      // localStorage.setItem("collegeId", loginData.user.id);
-        setTimeout(() => navigate("/dashboard"), 1000); // redirect to dashboard
+        localStorage.setItem("token", loginData.data.token);
+        // localStorage.setItem("role", loginData.user.role);
+        // localStorage.setItem("collegeId", loginData.user.id);
+        if (loginData.data.user.role === "superadmin") {
+          setTimeout(() => navigate("/dashboard"), 1000); // redirect to dashboard
+        } else {
+          alert("You are not authorized to access this page.");
+        }
       }
     } catch (err) {
       setMessage(`❌ ${err.message}`);
@@ -60,11 +64,11 @@ const AuthPage = () => {
         </h1>
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <div>
-            <label className="block text-gray-700 mb-1">Email</label>
+            <label className="block text-gray-700 mb-1">loginId</label>
             <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="loginId"
+              value={loginId}
+              onChange={(e) => setLoginId(e.target.value)}
               required
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2"
               style={{ borderColor: "#246fb2" }}
