@@ -9,7 +9,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   const menuItems = [
     { name: "Dashboard", icon: <Home size={20} />, path: "/dashboard" },
     { name: "CollegesPage", icon: <User size={20} />, path: "/CollegesPage" },
-    { name: "Settings", icon: <Settings size={20} />, path: "/settings" },
+  
   ];
 
   return (
