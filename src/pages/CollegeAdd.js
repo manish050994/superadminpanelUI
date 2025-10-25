@@ -580,12 +580,16 @@ const StudentsPage = () => {
           <table className="w-full border-collapse">
             <thead style={{ backgroundColor: "#246fb2" }}>
               <tr className="text-left text-white">
+                <th className="p-3">S.No.</th>
                 <th className="p-3">Name</th>
                 <th className="p-3">Roll No</th>
+                <th className="p-3">Login ID</th>
+                
                 <th className="p-3">Course</th>
                 <th className="p-3">Year</th>
                 <th className="p-3">Section</th>
                 <th className="p-3">Email</th>
+                <th className="p-3">Parent Login ID</th>
                 <th className="p-3">Parent</th>
                 <th className="p-3">Actions</th>
               </tr>
@@ -596,12 +600,16 @@ const StudentsPage = () => {
                   const course = courses.find((c) => c.code === stu.courseId);
                   return (
                     <tr key={stu.id} className="border-b">
+                      <td className="p-3">{(page - 1) * limit + students.indexOf(stu) + 1}</td>
                       <td className="p-3">{stu.name}</td>
                       <td className="p-3">{stu.rollNo}</td>
-                      <td className="p-3">{course?.name || stu.courseId}</td>
+                      <td className="p-3">{stu.User.loginId}</td>
+                   
+                      <td className="p-3">{ stu.Course.name}</td>
                       <td className="p-3">{stu.year}</td>
                       <td className="p-3">{stu.section}</td>
                       <td className="p-3">{stu.Parent?.email}</td>
+                         <td className="p-3">{stu?.Parent?.User?.loginId}</td>
                       <td className="p-3">{stu.Parent?.name}</td>
                       <td className="p-3 flex gap-2 flex-wrap">
                         <button onClick={() => handleEdit(stu)} className="px-3 py-1 bg-yellow-400 text-white rounded-md text-sm">Edit</button>

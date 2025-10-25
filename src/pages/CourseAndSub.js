@@ -359,6 +359,7 @@ const CoursesPage = () => {
   const [assignSubjects, setAssignSubjects] = useState([]);
   const [selectedCourseId, setSelectedCourseId] = useState(null);
   const [courseSubjects, setCourseSubjects] = useState([]);
+  const [courseName, setCourseName] = useState("");
   
   // Pagination states
   const [coursesPagination, setCoursesPagination] = useState({
@@ -411,6 +412,7 @@ const CoursesPage = () => {
       });
       const data = await res.json();
       setCourseSubjects(data.data?.subjects || []);
+      setCourseName(data.data?.courseName || "");
     } catch (err) {
       console.error(err);
     } finally {
@@ -761,14 +763,14 @@ const CoursesPage = () => {
         {selectedCourseId && courseSubjects.length > 0 && (
           <div className="bg-white shadow-md rounded-lg overflow-x-auto mb-6">
             <h2 className="font-semibold p-3" style={{ color: "#246fb2" }}>
-              Subjects for Course
+              Subjects for Course {courseName}
             </h2>
             <table className="w-full border-collapse">
               <thead style={{ backgroundColor: "#246fb2" }}>
                 <tr className="text-left text-white">
                   <th className="p-3">Code</th>
                   <th className="p-3">Name</th>
-                  <th className="p-3">Teacher</th>
+              
                 </tr>
               </thead>
               <tbody>
@@ -776,7 +778,7 @@ const CoursesPage = () => {
                   <tr key={s.id} className="border-b">
                     <td className="p-3">{s.code}</td>
                     <td className="p-3">{s.name}</td>
-                    <td className="p-3">{s.Teacher ? s.Teacher.name : "-"}</td>
+                   
                   </tr>
                 ))}
               </tbody>
