@@ -58,7 +58,7 @@ const CollegeDashboard = () => {
 
         {/* Students */}
         <div className="bg-white rounded-2xl shadow-md p-6 text-center hover:shadow-lg transition">
-          <h2 className="text-lg font-semibold text-gray-600">Students</h2>
+          <h2 className="text-lg font-semibold text-gray-600">Total Students</h2>
           <p className="text-3xl font-bold text-indigo-600 mt-2">
             {dashboard?.students}
           </p>
@@ -66,7 +66,7 @@ const CollegeDashboard = () => {
 
         {/* Teachers */}
         <div className="bg-white rounded-2xl shadow-md p-6 text-center hover:shadow-lg transition">
-          <h2 className="text-lg font-semibold text-gray-600">Teachers</h2>
+          <h2 className="text-lg font-semibold text-gray-600">Total Teachers</h2>
           <p className="text-3xl font-bold text-green-600 mt-2">
             {dashboard?.teachers}
           </p>
@@ -74,7 +74,7 @@ const CollegeDashboard = () => {
 
         {/* Fee Collections */}
         <div className="bg-white rounded-2xl shadow-md p-6 text-center hover:shadow-lg transition">
-          <h2 className="text-lg font-semibold text-gray-600">Fee Collections</h2>
+          <h2 className="text-lg font-semibold text-gray-600">Total Fee Collections</h2>
           <p className="text-3xl font-bold text-orange-600 mt-2">
             ₹{dashboard?.feeCollections}
           </p>
@@ -82,7 +82,7 @@ const CollegeDashboard = () => {
 
         {/* Present Today */}
         <div className="bg-white rounded-2xl shadow-md p-6 text-center hover:shadow-lg transition">
-          <h2 className="text-lg font-semibold text-gray-600">Present Today</h2>
+          <h2 className="text-lg font-semibold text-gray-600">Total Present Today</h2>
           <p className="text-3xl font-bold text-purple-600 mt-2">
             {dashboard?.presentToday}
           </p>

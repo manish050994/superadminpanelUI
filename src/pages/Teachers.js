@@ -858,7 +858,19 @@ const TeachersPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(form.email)) {
+    alert("Invalid email format!");
+    setLoading(false);
+    return;
+  }
 
+  const mobileRegex = /^[0-9]{10}$/;
+  if (form.mobileNo && !mobileRegex.test(form.mobileNo)) {
+    alert("Mobile number must be 10 digits!");
+    setLoading(false);
+    return;
+  }
     try {
       const formData = new FormData();
       
@@ -1223,7 +1235,7 @@ const TeachersPage = () => {
           </select>
 
           {/* Profile Photo Upload */}
-          <div className="col-span-2">
+          {/* <div className="col-span-2">
             <label className="block mb-2 font-medium">Profile Photo</label>
             <input
               type="file"
@@ -1232,7 +1244,7 @@ const TeachersPage = () => {
               onChange={handleFileChange}
               className="border px-3 py-2 rounded-lg w-full"
             />
-          </div>
+          </div> */}
 
           <button 
             type="submit" 
